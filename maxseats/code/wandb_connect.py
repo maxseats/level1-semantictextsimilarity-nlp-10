@@ -27,10 +27,13 @@ sweep_config = {
 sweep_id = wandb.sweep(sweep=sweep_config, project="maxseats")
 
 # WandB sweep를 실행합니다.
-wandb.agent(sweep_id, function=lambda: subprocess.call(['python', 'train.py']))
+wandb.agent(sweep_id, function=lambda: subprocess.call(['python3', 'train.py']))
 
 
 # 최적의 하이퍼파라미터 조합으로 스크립트를 실행합니다.
 best_run = wandb.runs(path='all', filters={'sweep': sweep_id, 'state': 'finished', 'config.val_pearson': 'max'}).pop()
 best_config = best_run.config
-subprocess.call(['python', 'train.py', f'--learning_rate={best_config.learning_rate}', f'--batch_size={best_config.batch_size}'])
+subprocess.call(['python3', 'train.py', f'--learning_rate={best_config.learning_rate}', f'--batch_size={best_config.batch_size}'])
+
+# [W&B] 학습이 완료되면 마지막에 W&B run을 종료합니다.
+wandb.finish()

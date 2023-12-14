@@ -211,15 +211,16 @@ if __name__ == '__main__':
     parser.add_argument('--dev_path', default='../data/dev.csv')
     parser.add_argument('--test_path', default='../data/dev.csv')
     parser.add_argument('--predict_path', default='../data/test.csv')
-    args = parser.parse_args(args=[])
-
+    #args = parser.parse_args(args=[])
+    args = parser.parse_args()
+    #접근 : args.model_name args.batch_size args.max_epoch args.shuffle args.learning_rate
 
     # W&B 초기화
     wandb.init(
         project="maxseats",  # W&B 대시보드에서 보고 싶은 프로젝트 이름으로 변경
         
         # run의 이름을 여기에 지정
-        name=f"{one_model_name} {two_batch_size} {three_max_epoch} {four_shuffle} {five_learning_rate}", 
+        name=f"{args.model_name} {args.batch_size} {args.max_epoch} {args.shuffle} {args.learning_rate}", 
         config={
             "model_name": args.model_name,
             "batch_size": args.batch_size,
@@ -253,4 +254,4 @@ if __name__ == '__main__':
     torch.save(model, 'model.pt')
 
     # [W&B] 학습이 완료되면 마지막에 W&B run을 종료합니다.
-    wandb.finish()
+    #wandb.finish()
