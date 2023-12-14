@@ -169,6 +169,8 @@ class Model(pl.LightningModule):
         logits = self(x)
 
         self.log("test_pearson", torchmetrics.functional.pearson_corrcoef(logits.squeeze(), y.squeeze()))
+        #wandb 로그 기록
+        wandb.log({"test_pearson": torchmetrics.functional.pearson_corrcoef(logits.squeeze(), y.squeeze())})
 
     def predict_step(self, batch, batch_idx):
         x = batch
@@ -186,7 +188,7 @@ if __name__ == '__main__':
     # 터미널 실행 예시 : python3 run.py --batch_size=64 ...
     # 실행 시 '--batch_size=64' 같은 인자를 입력하지 않으면 default 값이 기본으로 실행됩니다
     parser = argparse.ArgumentParser()
-    parser.add_argument('--model_name', default='klue/roberta-small', type=str)
+    parser.add_argument('--model_name', default='monologg/koelectra-base-finetuned-nsmc', type=str)
     parser.add_argument('--batch_size', default=16, type=int)
     parser.add_argument('--max_epoch', default=1, type=int)
     parser.add_argument('--shuffle', default=True)
@@ -201,7 +203,7 @@ if __name__ == '__main__':
     # W&B 초기화
     wandb.init(
         project="maxseats",  # W&B 대시보드에서 보고 싶은 프로젝트 이름으로 변경
-        
+        name="my-run-name",  # run의 이름을 여기에 지정
         config={
             "model_name": args.model_name,
             "batch_size": args.batch_size,
