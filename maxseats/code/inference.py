@@ -182,11 +182,11 @@ if __name__ == '__main__':
     
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('--model_name', default='snunlp/KR-ELECTRA-discriminator', type=str)
-    parser.add_argument('--batch_size', default=16, type=int)
-    parser.add_argument('--max_epoch', default=1, type=int)
-    parser.add_argument('--shuffle', default=True)
-    parser.add_argument('--learning_rate', default=1e-5, type=float)
+    parser.add_argument('--model_name', default=one_model_name, type=str)
+    parser.add_argument('--batch_size', default=two_batch_size, type=int)
+    parser.add_argument('--max_epoch', default=three_max_epoch, type=int)
+    parser.add_argument('--shuffle', default=four_shuffle)
+    parser.add_argument('--learning_rate', default=five_learning_rate, type=float)
     
     parser.add_argument('--train_path', default='../data/train.csv')
     parser.add_argument('--dev_path', default='../data/dev.csv')
