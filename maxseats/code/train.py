@@ -15,6 +15,17 @@ import pytorch_lightning as pl
 import wandb
 
 
+######################################################################
+#전역변수로 두기
+#디폴트 : klue/roberta-small, 16, 1, True, 1e-5
+one_model_name = 'kykim/electra-kor-base'
+two_batch_size = 16
+three_max_epoch = 1
+four_shuffle = True
+five_learning_rate = 1e-5
+######################################################################
+
+
 # seed 고정
 torch.manual_seed(0)
 torch.cuda.manual_seed(0)
@@ -189,15 +200,6 @@ if __name__ == '__main__':
     # 터미널 실행 예시 : python3 run.py --batch_size=64 ...
     # 실행 시 '--batch_size=64' 같은 인자를 입력하지 않으면 default 값이 기본으로 실행됩니다
     
-    ######################################################################
-    #디폴트 : klue/roberta-small, 16, 1, True, 1e-5
-    one_model_name = 'kykim/electra-kor-base'
-    two_batch_size = 16
-    three_max_epoch = 20
-    four_shuffle = True
-    five_learning_rate = 1e-5
-    ######################################################################
-    
     parser = argparse.ArgumentParser()
     parser.add_argument('--model_name', default=one_model_name, type=str)
     parser.add_argument('--batch_size', default=two_batch_size, type=int)
@@ -231,7 +233,10 @@ if __name__ == '__main__':
         }
     )
 
-    
+
+
+
+
     # dataloader와 model을 생성합니다.
     dataloader = Dataloader(args.model_name, args.batch_size, args.shuffle, args.train_path, args.dev_path,
                             args.test_path, args.predict_path)
