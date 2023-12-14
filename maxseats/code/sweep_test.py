@@ -218,7 +218,12 @@ def main():
 
     # W&B 초기화 - sweep사용 시 run할 필요 없음
     if (six_sweep == True):
-        wandb.init()
+        wandb.init(
+            project="maxseats",  # W&B 대시보드에서 보고 싶은 프로젝트 이름으로 변경
+
+            # run의 이름을 여기에 지정
+            name=f"{one_model_name} epoch {three_max_epoch} - sweep", 
+        )
         
     # dataloader와 model을 생성합니다. - wandb에서 가져오기!
     dataloader = Dataloader(one_model_name, wandb.config.batch_size, four_shuffle, '../data/train.csv', '../data/dev.csv',
