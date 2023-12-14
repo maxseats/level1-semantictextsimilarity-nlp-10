@@ -170,13 +170,17 @@ if __name__ == '__main__':
     # 터미널 실행 예시 : python3 run.py --batch_size=64 ...
     # 실행 시 '--batch_size=64' 같은 인자를 입력하지 않으면 default 값이 기본으로 실행됩니다
     
+    
+    ######################################################################
     #디폴트 : klue/roberta-small, 16, 1, True, 1e-5
-    one_model_name = 'snunlp/KR-ELECTRA-discriminator'
+    one_model_name = 'monologg/koelectra-base-finetuned-nsmc'
     two_batch_size = 16
-    three_max_epoch = 1
+    three_max_epoch = 20
     four_shuffle = True
     five_learning_rate = 1e-5
+    ######################################################################
     
+
     parser = argparse.ArgumentParser()
     parser.add_argument('--model_name', default='snunlp/KR-ELECTRA-discriminator', type=str)
     parser.add_argument('--batch_size', default=16, type=int)
