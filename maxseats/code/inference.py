@@ -121,7 +121,7 @@ class Model(pl.LightningModule):
 
         # 사용할 모델을 호출합니다.
         self.plm = transformers.AutoModelForSequenceClassification.from_pretrained(
-            pretrained_model_name_or_path=model_name, num_labels=1)
+            pretrained_model_name_or_path=model_name, num_labels=1, ignore_mismatched_sizes=True) #가중치 크기 불일치 오류 무시 옵션 추가
         # Loss 계산을 위해 사용될 L1Loss를 호출합니다.
         self.loss_func = torch.nn.L1Loss()
 
@@ -203,7 +203,8 @@ if __name__ == '__main__':
 
     # Inference part
     # 저장된 모델로 예측을 진행합니다.
-    model = torch.load('model.pt')
+    #model = torch.load('model.pt')
+    model = Model.load_from_checkpoint('/data/ephemeral/home/code/lightning_logs/version_11/checkpoints/epoch=55-step=32648.ckpt')
     predictions = trainer.predict(model=model, datamodule=dataloader)
 
     # 예측된 결과를 형식에 맞게 반올림하여 준비합니다.
