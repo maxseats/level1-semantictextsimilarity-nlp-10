@@ -212,7 +212,10 @@ if __name__ == '__main__':
     # W&B 초기화
     wandb.init(
         project="maxseats",  # W&B 대시보드에서 보고 싶은 프로젝트 이름으로 변경
-        name="my-run-name",  # run의 이름을 여기에 지정
+        
+        # run의 이름을 여기에 지정
+        name=one_model_name + ' ' + three_max_epoch + four_shuffle + five_learning_rate,  
+        
         config={
             "model_name": args.model_name,
             "batch_size": args.batch_size,
