@@ -1,6 +1,4 @@
 import argparse
-import random
-import subprocess
 
 import pandas as pd
 
@@ -10,27 +8,6 @@ import transformers
 import torch
 import torchmetrics
 import pytorch_lightning as pl
-
-#wandb 연동 및 추적
-import wandb
-
-
-######################################################################
-#전역변수로 두기
-#디폴트 : klue/roberta-small, 16, 1, True, 1e-5
-one_model_name = 'kykim/electra-kor-base'
-two_batch_size = 16
-three_max_epoch = 1
-four_shuffle = True
-five_learning_rate = 1e-5
-######################################################################
-
-
-# seed 고정
-torch.manual_seed(0)
-torch.cuda.manual_seed(0)
-torch.cuda.manual_seed_all(0)
-random.seed(0)
 
 
 class Dataset(torch.utils.data.Dataset):
@@ -144,7 +121,7 @@ class Model(pl.LightningModule):
 
         # 사용할 모델을 호출합니다.
         self.plm = transformers.AutoModelForSequenceClassification.from_pretrained(
-            pretrained_model_name_or_path=model_name, num_labels=1, ignore_mismatched_sizes=True)   #가중치 크기 불일치 오류 무시 옵션 추가
+            pretrained_model_name_or_path=model_name, num_labels=1)
         # Loss 계산을 위해 사용될 L1Loss를 호출합니다.
         self.loss_func = torch.nn.L1Loss()
 
@@ -158,7 +135,6 @@ class Model(pl.LightningModule):
         logits = self(x)
         loss = self.loss_func(logits, y.float())
         self.log("train_loss", loss)
-        wandb.log({"train_loss": loss.item()})  #wandb 로그 기록
 
         return loss
 
@@ -167,13 +143,9 @@ class Model(pl.LightningModule):
         logits = self(x)
         loss = self.loss_func(logits, y.float())
         self.log("val_loss", loss)
+
         self.log("val_pearson", torchmetrics.functional.pearson_corrcoef(logits.squeeze(), y.squeeze()))
-        
-        #wandb 로그 기록
-        wandb.log({"val_loss": loss.item()})
-        wandb.log({"val_pearson": torchmetrics.functional.pearson_corrcoef(logits.squeeze(), y.squeeze())})
-        
-        
+
         return loss
 
     def test_step(self, batch, batch_idx):
@@ -181,8 +153,6 @@ class Model(pl.LightningModule):
         logits = self(x)
 
         self.log("test_pearson", torchmetrics.functional.pearson_corrcoef(logits.squeeze(), y.squeeze()))
-        #wandb 로그 기록
-        wandb.log({"test_pearson": torchmetrics.functional.pearson_corrcoef(logits.squeeze(), y.squeeze())})
 
     def predict_step(self, batch, batch_idx):
         x = batch
@@ -199,59 +169,34 @@ if __name__ == '__main__':
     # 하이퍼 파라미터 등 각종 설정값을 입력받습니다
     # 터미널 실행 예시 : python3 run.py --batch_size=64 ...
     # 실행 시 '--batch_size=64' 같은 인자를 입력하지 않으면 default 값이 기본으로 실행됩니다
-    
     parser = argparse.ArgumentParser()
-    parser.add_argument('--model_name', default=one_model_name, type=str)
-    parser.add_argument('--batch_size', default=two_batch_size, type=int)
-    parser.add_argument('--max_epoch', default=three_max_epoch, type=int)
-    parser.add_argument('--shuffle', default=four_shuffle)
-    parser.add_argument('--learning_rate', default=five_learning_rate, type=float)
-
+    parser.add_argument('--model_name', default='klue/roberta-small', type=str)
+    parser.add_argument('--batch_size', default=16, type=int)
+    parser.add_argument('--max_epoch', default=1, type=int)
+    parser.add_argument('--shuffle', default=True)
+    parser.add_argument('--learning_rate', default=1e-5, type=float)
     parser.add_argument('--train_path', default='../data/train.csv')
     parser.add_argument('--dev_path', default='../data/dev.csv')
     parser.add_argument('--test_path', default='../data/dev.csv')
     parser.add_argument('--predict_path', default='../data/test.csv')
-    #args = parser.parse_args(args=[])
-    args = parser.parse_args()
-    #접근 : args.model_name args.batch_size args.max_epoch args.shuffle args.learning_rate
-
-    # W&B 초기화
-    wandb.init(
-        project="maxseats",  # W&B 대시보드에서 보고 싶은 프로젝트 이름으로 변경
-        
-        # run의 이름을 여기에 지정
-        name=f"{args.model_name} {args.batch_size} {args.max_epoch} {args.shuffle} {args.learning_rate}", 
-        config={
-            "model_name": args.model_name,
-            "batch_size": args.batch_size,
-            "max_epoch": args.max_epoch,
-            "shuffle": args.shuffle,
-            "learning_rate": args.learning_rate,
-            "train_path": args.train_path,
-            "dev_path": args.dev_path,
-            "test_path": args.test_path,
-            "predict_path": args.predict_path,
-        }
-    )
-
-
-
-
+    args = parser.parse_args(args=[])
 
     # dataloader와 model을 생성합니다.
     dataloader = Dataloader(args.model_name, args.batch_size, args.shuffle, args.train_path, args.dev_path,
                             args.test_path, args.predict_path)
-    model = Model(args.model_name, args.learning_rate)
 
-    # gpu가 없으면 accelerator="cpu"로 변경해주세요, gpu가 여러개면 'devices=4'처럼 사용하실 gpu의 개수를 입력해주세요
+    # gpu가 없으면 'gpus=0'을, gpu가 여러개면 'gpus=4'처럼 사용하실 gpu의 개수를 입력해주세요
     trainer = pl.Trainer(accelerator="gpu", devices=1, max_epochs=args.max_epoch, log_every_n_steps=1)
 
-    # Train part
-    trainer.fit(model=model, datamodule=dataloader)
-    trainer.test(model=model, datamodule=dataloader)
+    # Inference part
+    # 저장된 모델로 예측을 진행합니다.
+    model = torch.load('model.pt')
+    predictions = trainer.predict(model=model, datamodule=dataloader)
 
-    # 학습이 완료된 모델을 저장합니다.
-    torch.save(model, 'model.pt')
+    # 예측된 결과를 형식에 맞게 반올림하여 준비합니다.
+    predictions = list(round(float(i), 1) for i in torch.cat(predictions))
 
-    # [W&B] 학습이 완료되면 마지막에 W&B run을 종료합니다.
-    #wandb.finish()
+    # output 형식을 불러와서 예측된 결과로 바꿔주고, output.csv로 출력합니다.
+    output = pd.read_csv('../data/sample_submission.csv')
+    output['target'] = predictions
+    output.to_csv('output.csv', index=False)

@@ -1,4 +1,5 @@
 import argparse
+import random
 
 import pandas as pd
 
@@ -8,6 +9,12 @@ import transformers
 import torch
 import torchmetrics
 import pytorch_lightning as pl
+
+# seed 고정
+torch.manual_seed(0)
+torch.cuda.manual_seed(0)
+torch.cuda.manual_seed_all(0)
+random.seed(0)
 
 
 class Dataset(torch.utils.data.Dataset):
@@ -169,25 +176,12 @@ if __name__ == '__main__':
     # 하이퍼 파라미터 등 각종 설정값을 입력받습니다
     # 터미널 실행 예시 : python3 run.py --batch_size=64 ...
     # 실행 시 '--batch_size=64' 같은 인자를 입력하지 않으면 default 값이 기본으로 실행됩니다
-    
-    
-    ######################################################################
-    #디폴트 : klue/roberta-small, 16, 1, True, 1e-5
-    one_model_name = 'kykim/electra-kor-base'
-    two_batch_size = 16
-    three_max_epoch = 20
-    four_shuffle = True
-    five_learning_rate = 1e-5
-    ######################################################################
-    
-
     parser = argparse.ArgumentParser()
-    parser.add_argument('--model_name', default=one_model_name, type=str)
-    parser.add_argument('--batch_size', default=two_batch_size, type=int)
-    parser.add_argument('--max_epoch', default=three_max_epoch, type=int)
-    parser.add_argument('--shuffle', default=four_shuffle)
-    parser.add_argument('--learning_rate', default=five_learning_rate, type=float)
-    
+    parser.add_argument('--model_name', default='klue/roberta-small', type=str)
+    parser.add_argument('--batch_size', default=16, type=int)
+    parser.add_argument('--max_epoch', default=1, type=int)
+    parser.add_argument('--shuffle', default=True)
+    parser.add_argument('--learning_rate', default=1e-5, type=float)
     parser.add_argument('--train_path', default='../data/train.csv')
     parser.add_argument('--dev_path', default='../data/dev.csv')
     parser.add_argument('--test_path', default='../data/dev.csv')
@@ -197,21 +191,14 @@ if __name__ == '__main__':
     # dataloader와 model을 생성합니다.
     dataloader = Dataloader(args.model_name, args.batch_size, args.shuffle, args.train_path, args.dev_path,
                             args.test_path, args.predict_path)
+    model = Model(args.model_name, args.learning_rate)
 
-    # gpu가 없으면 'gpus=0'을, gpu가 여러개면 'gpus=4'처럼 사용하실 gpu의 개수를 입력해주세요
+    # gpu가 없으면 accelerator="cpu"로 변경해주세요, gpu가 여러개면 'devices=4'처럼 사용하실 gpu의 개수를 입력해주세요
     trainer = pl.Trainer(accelerator="gpu", devices=1, max_epochs=args.max_epoch, log_every_n_steps=1)
 
-    # Inference part
-    # 저장된 모델로 예측을 진행합니다.
-    model = torch.load('model.pt')
-    #model = Model.load_from_checkpoint('/data/ephemeral/home/code/lightning_logs/version_11/checkpoints/epoch=55-step=32648.ckpt')
-    
-    predictions = trainer.predict(model=model, datamodule=dataloader)
+    # Train part
+    trainer.fit(model=model, datamodule=dataloader)
+    trainer.test(model=model, datamodule=dataloader)
 
-    # 예측된 결과를 형식에 맞게 반올림하여 준비합니다.
-    predictions = list(round(float(i), 1) for i in torch.cat(predictions))
-
-    # output 형식을 불러와서 예측된 결과로 바꿔주고, output.csv로 출력합니다.
-    output = pd.read_csv('../data/sample_submission.csv')
-    output['target'] = predictions
-    output.to_csv('output.csv', index=False)
+    # 학습이 완료된 모델을 저장합니다.
+    torch.save(model, 'model.pt')
