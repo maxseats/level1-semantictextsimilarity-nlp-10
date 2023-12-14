@@ -20,7 +20,7 @@ import wandb
 #디폴트 : klue/roberta-small, 16, 1, True, 1e-5
 one_model_name = 'kykim/electra-kor-base'
 two_batch_size = 16
-three_max_epoch = 1
+three_max_epoch = 30
 four_shuffle = True
 five_learning_rate = 1e-5
 ######################################################################
@@ -254,4 +254,4 @@ if __name__ == '__main__':
     torch.save(model, 'model.pt')
 
     # [W&B] 학습이 완료되면 마지막에 W&B run을 종료합니다.
-    #wandb.finish()
+    wandb.finish()
