@@ -1,5 +1,6 @@
 import argparse
 import random
+import subprocess
 
 import pandas as pd
 
@@ -132,7 +133,7 @@ class Model(pl.LightningModule):
 
         # 사용할 모델을 호출합니다.
         self.plm = transformers.AutoModelForSequenceClassification.from_pretrained(
-            pretrained_model_name_or_path=model_name, num_labels=1, ignore_mismatched_sizes=True)   #가중키 크기 불일치 오류 무시 옵션 추가
+            pretrained_model_name_or_path=model_name, num_labels=1, ignore_mismatched_sizes=True)   #가중치 크기 불일치 오류 무시 옵션 추가
         # Loss 계산을 위해 사용될 L1Loss를 호출합니다.
         self.loss_func = torch.nn.L1Loss()
 
@@ -190,7 +191,7 @@ if __name__ == '__main__':
     
     ######################################################################
     #디폴트 : klue/roberta-small, 16, 1, True, 1e-5
-    one_model_name = 'xlm-roberta-large'
+    one_model_name = 'kykim/electra-kor-base'
     two_batch_size = 16
     three_max_epoch = 1
     four_shuffle = True
@@ -217,7 +218,6 @@ if __name__ == '__main__':
         
         # run의 이름을 여기에 지정
         name=f"{one_model_name} {two_batch_size} {three_max_epoch} {four_shuffle} {five_learning_rate}", 
-        #one_model_name + ' ' two_batch_size + ' '+ three_max_epoch + four_shuffle + five_learning_rate
         config={
             "model_name": args.model_name,
             "batch_size": args.batch_size,
@@ -231,9 +231,7 @@ if __name__ == '__main__':
         }
     )
 
-
-
-
+    
     # dataloader와 model을 생성합니다.
     dataloader = Dataloader(args.model_name, args.batch_size, args.shuffle, args.train_path, args.dev_path,
                             args.test_path, args.predict_path)
