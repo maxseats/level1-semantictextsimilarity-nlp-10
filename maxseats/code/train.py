@@ -211,7 +211,7 @@ if __name__ == '__main__':
     parser.add_argument('--shuffle', default=four_shuffle)
     parser.add_argument('--learning_rate', default=five_learning_rate, type=float)
 
-    parser.add_argument('--train_path', default='../data/train.csv')
+    parser.add_argument('--train_path', default=six_train_path)
     parser.add_argument('--dev_path', default='../data/dev.csv')
     parser.add_argument('--test_path', default='../data/dev.csv')
     parser.add_argument('--predict_path', default='../data/test.csv')
