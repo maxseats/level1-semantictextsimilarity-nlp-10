@@ -174,8 +174,8 @@ if __name__ == '__main__':
     ######################################################################
     #디폴트 : klue/roberta-small, 16, 1, True, 1e-5
     one_model_name = 'kykim/electra-kor-base'
-    two_batch_size = 8
-    three_max_epoch = 100
+    two_batch_size = 16
+    three_max_epoch = 20
     four_shuffle = True
     five_learning_rate = 1e-5
     ######################################################################
@@ -204,7 +204,7 @@ if __name__ == '__main__':
     # Inference part
     # 저장된 모델로 예측을 진행합니다.
     model = torch.load('model.pt')
-    #model = Model.load_from_checkpoint('/data/ephemeral/home/code/lightning_logs/version_11/checkpoints/epoch=55-step=32648.ckpt')
+    #model = Model.load_from_checkpoint('/data/ephemeral/home/code/lightning_logs/version_53/checkpoints/epoch=19-step=5840.ckpt')
     
     predictions = trainer.predict(model=model, datamodule=dataloader)
 

@@ -17,12 +17,16 @@ import wandb
 
 ######################################################################
 #전역변수로 두기
-#디폴트 : klue/roberta-small, 16, 1, True, 1e-5
+#디폴트 : klue/roberta-small, 16, 1, True, 1e-5, '../data/train.csv'
+
+#예진스 데이터 넣고 비교(동일조건 원래 데이터 학습결과 있음)
 one_model_name = 'kykim/electra-kor-base'
-two_batch_size = 8
-three_max_epoch = 100
+two_batch_size = 16
+three_max_epoch = 20
 four_shuffle = True
 five_learning_rate = 1e-5
+
+six_train_path = '/data/ephemeral/home/code/harf_df.csv'
 ######################################################################
 
 
@@ -242,6 +246,9 @@ if __name__ == '__main__':
     dataloader = Dataloader(args.model_name, args.batch_size, args.shuffle, args.train_path, args.dev_path,
                             args.test_path, args.predict_path)
     model = Model(args.model_name, args.learning_rate)
+    
+    #모델을 불러오기 - 선택
+    #model.load_state_dict(torch.load('/data/ephemeral/home/code/lightning_logs/version_53/checkpoints/epoch=19-step=5840.ckpt'))
 
     # gpu가 없으면 accelerator="cpu"로 변경해주세요, gpu가 여러개면 'devices=4'처럼 사용하실 gpu의 개수를 입력해주세요
     trainer = pl.Trainer(accelerator="gpu", devices=1, max_epochs=args.max_epoch, log_every_n_steps=1)
