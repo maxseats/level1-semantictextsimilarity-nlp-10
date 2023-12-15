@@ -172,12 +172,14 @@ if __name__ == '__main__':
     
     
     ######################################################################
-    #디폴트 : klue/roberta-small, 16, 1, True, 1e-5
+    #디폴트 : klue/roberta-small, 16, 1, True, 1e-5, '../data/train.csv'
     one_model_name = 'kykim/electra-kor-base'
     two_batch_size = 16
     three_max_epoch = 20
     four_shuffle = True
     five_learning_rate = 1e-5
+
+    six_train_path = '/data/ephemeral/home/code/harf_df.csv'
     ######################################################################
     
 
@@ -188,7 +190,7 @@ if __name__ == '__main__':
     parser.add_argument('--shuffle', default=four_shuffle)
     parser.add_argument('--learning_rate', default=five_learning_rate, type=float)
     
-    parser.add_argument('--train_path', default='../data/train.csv')
+    parser.add_argument('--train_path', default=six_train_path)
     parser.add_argument('--dev_path', default='../data/dev.csv')
     parser.add_argument('--test_path', default='../data/dev.csv')
     parser.add_argument('--predict_path', default='../data/test.csv')
