@@ -20,12 +20,12 @@ import wandb
 #디폴트 : klue/roberta-small, 16, 1, True, 1e-5
 one_model_name = 'kykim/electra-kor-base'
 two_batch_size = 32
-three_max_epoch = 1
+three_max_epoch = 20
 four_shuffle = True
 five_learning_rate = 1e-5
 
 six_sweep = True    #sweep 사용 여부
-seven_exp_count = 4   #sweep 이용 시, 실험 수
+seven_exp_count = 10   #sweep 이용 시, 실험 수
 ######################################################################
 
 
