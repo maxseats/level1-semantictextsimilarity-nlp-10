@@ -19,10 +19,9 @@ import wandb
 #전역변수로 두기
 #디폴트 : klue/roberta-small, 16, 1, True, 1e-5, '../data/train.csv'
 
-#예진스 데이터 넣고 비교(동일조건 원래 데이터 학습결과 있음)
 one_model_name = 'kykim/electra-kor-base'
 two_batch_size = 16
-three_max_epoch = 40
+three_max_epoch = 25
 four_shuffle = True
 five_learning_rate = 1e-5
 
