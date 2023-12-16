@@ -18,9 +18,9 @@ import wandb
 ######################################################################
 #전역변수로 두기
 #디폴트 : klue/roberta-small, 16, 1, True, 1e-5
-one_model_name = 'kykim/electra-kor-base'
-two_batch_size = 32
-three_max_epoch = 20
+one_model_name = 'monologg/koelectra-base-v3-discriminator'
+two_batch_size = 16
+three_max_epoch = 10
 four_shuffle = True
 five_learning_rate = 1e-5
 
