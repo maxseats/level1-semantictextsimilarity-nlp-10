@@ -10,6 +10,20 @@ import torchmetrics
 import pytorch_lightning as pl
 
 
+######################################################################
+#전역변수로 두기
+#디폴트 : klue/roberta-small, 16, 1, True, 1e-5, '../data/train.csv'
+one_model_name = 'kykim/electra-kor-base'
+two_batch_size = 16
+three_max_epoch = 5
+four_shuffle = True
+five_learning_rate = 1e-5
+#
+six_train_path = '/data/ephemeral/home/code/stopword_space_Addlabel5.csv'
+######################################################################
+
+
+
 class Dataset(torch.utils.data.Dataset):
     def __init__(self, inputs, targets=[]):
         self.inputs = inputs
@@ -171,16 +185,7 @@ if __name__ == '__main__':
     # 실행 시 '--batch_size=64' 같은 인자를 입력하지 않으면 default 값이 기본으로 실행됩니다
     
     
-    ######################################################################
-    #디폴트 : klue/roberta-small, 16, 1, True, 1e-5, '../data/train.csv'
-    one_model_name = 'kykim/electra-kor-base'
-    two_batch_size = 16
-    three_max_epoch = 35
-    four_shuffle = True
-    five_learning_rate = 1e-5
-    six_train_path = '../data/train.csv'
-    ######################################################################
-    
+
 
     parser = argparse.ArgumentParser()
     parser.add_argument('--model_name', default=one_model_name, type=str)
