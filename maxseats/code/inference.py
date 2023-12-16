@@ -172,12 +172,13 @@ if __name__ == '__main__':
     
     
     ######################################################################
-    #디폴트 : klue/roberta-small, 16, 1, True, 1e-5
+    #디폴트 : klue/roberta-small, 16, 1, True, 1e-5, '../data/train.csv'
     one_model_name = 'kykim/electra-kor-base'
-    two_batch_size = 32
-    three_max_epoch = 20
+    two_batch_size = 16
+    three_max_epoch = 25
     four_shuffle = True
     five_learning_rate = 1e-5
+    six_train_path = '../data/train.csv'
     ######################################################################
     
 
@@ -188,7 +189,7 @@ if __name__ == '__main__':
     parser.add_argument('--shuffle', default=four_shuffle)
     parser.add_argument('--learning_rate', default=five_learning_rate, type=float)
     
-    parser.add_argument('--train_path', default='../data/train.csv')
+    parser.add_argument('--train_path', default=six_train_path)
     parser.add_argument('--dev_path', default='../data/dev.csv')
     parser.add_argument('--test_path', default='../data/dev.csv')
     parser.add_argument('--predict_path', default='../data/test.csv')
@@ -204,7 +205,7 @@ if __name__ == '__main__':
     # Inference part
     # 저장된 모델로 예측을 진행합니다.
     model = torch.load('model.pt')
-    #model = Model.load_from_checkpoint('/data/ephemeral/home/code/lightning_logs/version_11/checkpoints/epoch=55-step=32648.ckpt')
+    #model = Model.load_from_checkpoint('/data/ephemeral/home/code/lightning_logs/version_53/checkpoints/epoch=19-step=5840.ckpt')
     
     predictions = trainer.predict(model=model, datamodule=dataloader)
 

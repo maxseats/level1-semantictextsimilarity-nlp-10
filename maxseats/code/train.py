@@ -17,12 +17,16 @@ import wandb
 
 ######################################################################
 #전역변수로 두기
-#디폴트 : klue/roberta-small, 16, 1, True, 1e-5
+#디폴트 : klue/roberta-small, 16, 1, True, 1e-5, '../data/train.csv'
+
 one_model_name = 'kykim/electra-kor-base'
-two_batch_size = 8
-three_max_epoch = 100
+two_batch_size = 16
+three_max_epoch = 25
 four_shuffle = True
 five_learning_rate = 1e-5
+
+six_train_path = '../data/train.csv'
+#'/data/ephemeral/home/code/harf_df.csv'
 ######################################################################
 
 
@@ -207,7 +211,7 @@ if __name__ == '__main__':
     parser.add_argument('--shuffle', default=four_shuffle)
     parser.add_argument('--learning_rate', default=five_learning_rate, type=float)
 
-    parser.add_argument('--train_path', default='../data/train.csv')
+    parser.add_argument('--train_path', default=six_train_path)
     parser.add_argument('--dev_path', default='../data/dev.csv')
     parser.add_argument('--test_path', default='../data/dev.csv')
     parser.add_argument('--predict_path', default='../data/test.csv')
@@ -242,6 +246,9 @@ if __name__ == '__main__':
     dataloader = Dataloader(args.model_name, args.batch_size, args.shuffle, args.train_path, args.dev_path,
                             args.test_path, args.predict_path)
     model = Model(args.model_name, args.learning_rate)
+    
+    #모델을 불러오기 - 선택
+    #model.load_state_dict(torch.load('/data/ephemeral/home/code/lightning_logs/version_53/checkpoints/epoch=19-step=5840.ckpt'))
 
     # gpu가 없으면 accelerator="cpu"로 변경해주세요, gpu가 여러개면 'devices=4'처럼 사용하실 gpu의 개수를 입력해주세요
     trainer = pl.Trainer(accelerator="gpu", devices=1, max_epochs=args.max_epoch, log_every_n_steps=1)
