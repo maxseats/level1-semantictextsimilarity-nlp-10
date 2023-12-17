@@ -38,7 +38,7 @@ one_model_name = 'kykim/electra-kor-base'
 two_batch_size = 16
 three_max_epoch = 30
 four_shuffle = True
-five_learning_rate = 1e-5
+five_learning_rate = 0.00001108
 
 #six_train_path = '/data/ephemeral/home/code/stopword_space_Addlabel5.csv'   #불용어처리+띄어쓰기 -> Label5.0 증강
 six_train_path = '/data/ephemeral/home/code/stopword_space_Addlabel5.csv'
@@ -274,7 +274,7 @@ if __name__ == '__main__':
     trainer.test(model=model, datamodule=dataloader)
 
     # 학습이 완료된 모델을 저장합니다.
-    torch.save(model, 'model.pt')
+    torch.save(model, 'model2.pt')
 
     # [W&B] 학습이 완료되면 마지막에 W&B run을 종료합니다.
     wandb.finish()
