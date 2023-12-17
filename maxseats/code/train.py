@@ -15,17 +15,33 @@ import pytorch_lightning as pl
 import wandb
 
 
+'''
+모델들
+kykim/electra-kor-base
+monologg/koelectra-base-v3-discriminator
+monologg/koelectra-base-finetuned-nsmc
+klue/roberta-small
+klue/roberta-large
+kykim/bert-kor-base
+kykim/funnel-kor-base
+jhgan/ko-sroberta-multitask
+
+xlm-roberta-large
+snunlp/KR-ELECTRA-discriminator
+'''
+
 ######################################################################
 #전역변수로 두기
 #디폴트 : klue/roberta-small, 16, 1, True, 1e-5, '../data/train.csv'
 
 one_model_name = 'kykim/electra-kor-base'
 two_batch_size = 16
-three_max_epoch = 25
+three_max_epoch = 30
 four_shuffle = True
 five_learning_rate = 1e-5
 
-six_train_path = '../data/train.csv'
+#six_train_path = '/data/ephemeral/home/code/stopword_space_Addlabel5.csv'   #불용어처리+띄어쓰기 -> Label5.0 증강
+six_train_path = '/data/ephemeral/home/code/stopword_space_Addlabel5.csv'
 #'/data/ephemeral/home/code/harf_df.csv'
 ######################################################################
 
@@ -224,7 +240,7 @@ if __name__ == '__main__':
         project="maxseats",  # W&B 대시보드에서 보고 싶은 프로젝트 이름으로 변경
         
         # run의 이름을 여기에 지정
-        name=f"{args.model_name} {args.batch_size} {args.max_epoch} {args.shuffle} {args.learning_rate}", 
+        name=f"{args.model_name} {args.batch_size} {args.max_epoch} {args.shuffle} {args.learning_rate} {six_train_path}", 
         config={
             "model_name": args.model_name,
             "batch_size": args.batch_size,
