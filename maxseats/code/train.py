@@ -36,12 +36,12 @@ snunlp/KR-ELECTRA-discriminator
 
 one_model_name = 'kykim/electra-kor-base'
 two_batch_size = 16
-three_max_epoch = 20
+three_max_epoch = 10
 four_shuffle = True
 five_learning_rate = 1e-5
 
-#six_train_path = '/data/ephemeral/home/code/stopword_space_Addlabel5.csv'   #불용어처리+띄어쓰기 -> Label5.0 증강
-six_train_path = '/data/ephemeral/home/code/stopword_space_Addlabel5.csv'
+six_train_path = '/data/ephemeral/home/code/stopword_space_Addlabel5.csv'   #불용어처리+띄어쓰기 -> Label5.0 증강
+#six_train_path = '../data/train.csv'
 #'/data/ephemeral/home/code/harf_df.csv'
 ######################################################################
 
