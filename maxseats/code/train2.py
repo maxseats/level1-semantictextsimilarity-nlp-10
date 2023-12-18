@@ -14,6 +14,7 @@ import pytorch_lightning as pl
 #wandb 연동 및 추적
 import wandb
 
+
 '''
 모델들
 kykim/electra-kor-base
@@ -28,32 +29,21 @@ jhgan/ko-sroberta-multitask
 xlm-roberta-large
 snunlp/KR-ELECTRA-discriminator
 '''
+
 ######################################################################
 #전역변수로 두기
-#디폴트 : klue/roberta-small, 16, 1, True, 1e-5
-one_model_name = 'kykim/bert-kor-base'
+#디폴트 : klue/roberta-small, 16, 1, True, 1e-5, '../data/train.csv'
+
+one_model_name = 'kykim/electra-kor-base'
 two_batch_size = 16
 three_max_epoch = 10
 four_shuffle = True
 five_learning_rate = 1e-5
 
-six_sweep = True    #sweep 사용 여부
-seven_exp_count = 10   #sweep 이용 시, 실험 수
-
-eight_train_path = '../data/train.csv'  #훈련 데이터 위치
+six_train_path = '/data/ephemeral/home/code/stopword_space_Addlabel5.csv'   #불용어처리+띄어쓰기 -> Label5.0 증강
+#six_train_path = '../data/train.csv'
+#'/data/ephemeral/home/code/harf_df.csv'
 ######################################################################
-
-
-# WandB sweep configuration을 정의합니다.
-sweep_config = {
-        "name": f"{one_model_name}, epoch:{three_max_epoch}",  # Sweep의 이름
-        "method": "random",    # 탐색 방법 (grid 또는 random)
-        "metric": {"goal": "maximize", "name": "val_pearson"},  # 최적화할 메트릭 설정
-        "parameters": {
-            "learning_rate": {"max": 2e-5, "min": 1e-5},
-            "batch_size": {"values": [8, 16, 32]},
-        },
-    }
 
 
 # seed 고정
@@ -152,7 +142,7 @@ class Dataloader(pl.LightningDataModule):
             self.predict_dataset = Dataset(predict_inputs, [])
 
     def train_dataloader(self):
-        return torch.utils.data.DataLoader(self.train_dataset, batch_size=self.batch_size, shuffle=four_shuffle)
+        return torch.utils.data.DataLoader(self.train_dataset, batch_size=self.batch_size, shuffle=args.shuffle)
 
     def val_dataloader(self):
         return torch.utils.data.DataLoader(self.val_dataset, batch_size=self.batch_size)
@@ -225,42 +215,66 @@ class Model(pl.LightningModule):
         return optimizer
 
 
-#if __name__ == '__main__':
-def main():
+if __name__ == '__main__':
     # 하이퍼 파라미터 등 각종 설정값을 입력받습니다
     # 터미널 실행 예시 : python3 run.py --batch_size=64 ...
     # 실행 시 '--batch_size=64' 같은 인자를 입력하지 않으면 default 값이 기본으로 실행됩니다
+    
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--model_name', default=one_model_name, type=str)
+    parser.add_argument('--batch_size', default=two_batch_size, type=int)
+    parser.add_argument('--max_epoch', default=three_max_epoch, type=int)
+    parser.add_argument('--shuffle', default=four_shuffle)
+    parser.add_argument('--learning_rate', default=five_learning_rate, type=float)
 
-    # W&B 초기화 - sweep사용 시 run할 필요 없음
-    if (six_sweep == True):
-        wandb.init(
-            project="maxseats",  # W&B 대시보드에서 보고 싶은 프로젝트 이름으로 변경
+    parser.add_argument('--train_path', default=six_train_path)
+    parser.add_argument('--dev_path', default='../data/dev.csv')
+    parser.add_argument('--test_path', default='../data/dev.csv')
+    parser.add_argument('--predict_path', default='../data/test.csv')
+    #args = parser.parse_args(args=[])
+    args = parser.parse_args()
+    #접근 : args.model_name args.batch_size args.max_epoch args.shuffle args.learning_rate
 
-            # run의 이름을 여기에 지정
-            name=f"{one_model_name} epoch {three_max_epoch} - sweep", 
-        )
+    # W&B 초기화
+    wandb.init(
+        project="maxseats",  # W&B 대시보드에서 보고 싶은 프로젝트 이름으로 변경
         
-    # dataloader와 model을 생성합니다. - wandb에서 가져오기!
-    dataloader = Dataloader(one_model_name, wandb.config.batch_size, four_shuffle, eight_train_path, '../data/dev.csv',
-                            '../data/dev.csv', '../data/test.csv')
-    model = Model(one_model_name, wandb.config.learning_rate)
+        # run의 이름을 여기에 지정
+        name=f"{args.model_name} {args.batch_size} {args.max_epoch} {args.shuffle} {args.learning_rate} {six_train_path}", 
+        config={
+            "model_name": args.model_name,
+            "batch_size": args.batch_size,
+            "max_epoch": args.max_epoch,
+            "shuffle": args.shuffle,
+            "learning_rate": args.learning_rate,
+            "train_path": args.train_path,
+            "dev_path": args.dev_path,
+            "test_path": args.test_path,
+            "predict_path": args.predict_path,
+        }
+    )
+
+
+
+
+
+    # dataloader와 model을 생성합니다.
+    dataloader = Dataloader(args.model_name, args.batch_size, args.shuffle, args.train_path, args.dev_path,
+                            args.test_path, args.predict_path)
+    model = Model(args.model_name, args.learning_rate)
+    
+    #모델을 불러오기 - 선택
+    #model.load_state_dict(torch.load('/data/ephemeral/home/code/lightning_logs/version_53/checkpoints/epoch=19-step=5840.ckpt'))
 
     # gpu가 없으면 accelerator="cpu"로 변경해주세요, gpu가 여러개면 'devices=4'처럼 사용하실 gpu의 개수를 입력해주세요
-    trainer = pl.Trainer(accelerator="gpu", devices=1, max_epochs=three_max_epoch, log_every_n_steps=1)
+    trainer = pl.Trainer(accelerator="gpu", devices=1, max_epochs=args.max_epoch, log_every_n_steps=1)
 
     # Train part
     trainer.fit(model=model, datamodule=dataloader)
     trainer.test(model=model, datamodule=dataloader)
 
     # 학습이 완료된 모델을 저장합니다.
-    torch.save(model, 'model3.pt')
+    torch.save(model, 'model2.pt')
 
-
-
-
-# WandB sweep를 초기화하고 sweep ID를 가져옵니다.
-sweep_id = wandb.sweep(sweep=sweep_config, project="maxseats")
-wandb.agent(sweep_id, function=main, count=seven_exp_count)
-
-# [W&B] 학습이 완료되면 마지막에 W&B run을 종료합니다.
-wandb.finish()
+    # [W&B] 학습이 완료되면 마지막에 W&B run을 종료합니다.
+    wandb.finish()
