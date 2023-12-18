@@ -14,11 +14,24 @@ import pytorch_lightning as pl
 #wandb 연동 및 추적
 import wandb
 
+'''
+모델들
+kykim/electra-kor-base
+monologg/koelectra-base-v3-discriminator
+monologg/koelectra-base-finetuned-nsmc
+klue/roberta-small
+klue/roberta-large
+kykim/bert-kor-base
+kykim/funnel-kor-base
+jhgan/ko-sroberta-multitask
 
+xlm-roberta-large
+snunlp/KR-ELECTRA-discriminator
+'''
 ######################################################################
 #전역변수로 두기
 #디폴트 : klue/roberta-small, 16, 1, True, 1e-5
-one_model_name = 'monologg/koelectra-base-v3-discriminator'
+one_model_name = 'kykim/bert-kor-base'
 two_batch_size = 16
 three_max_epoch = 10
 four_shuffle = True
@@ -26,6 +39,8 @@ five_learning_rate = 1e-5
 
 six_sweep = True    #sweep 사용 여부
 seven_exp_count = 10   #sweep 이용 시, 실험 수
+
+eight_train_path = '../data/train.csv'  #훈련 데이터 위치
 ######################################################################
 
 
@@ -226,7 +241,7 @@ def main():
         )
         
     # dataloader와 model을 생성합니다. - wandb에서 가져오기!
-    dataloader = Dataloader(one_model_name, wandb.config.batch_size, four_shuffle, '../data/train.csv', '../data/dev.csv',
+    dataloader = Dataloader(one_model_name, wandb.config.batch_size, four_shuffle, eight_train_path, '../data/dev.csv',
                             '../data/dev.csv', '../data/test.csv')
     model = Model(one_model_name, wandb.config.learning_rate)
 
@@ -238,7 +253,7 @@ def main():
     trainer.test(model=model, datamodule=dataloader)
 
     # 학습이 완료된 모델을 저장합니다.
-    torch.save(model, 'model.pt')
+    torch.save(model, 'model3.pt')
 
 
 
