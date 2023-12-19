@@ -36,11 +36,11 @@ snunlp/KR-ELECTRA-discriminator
 
 one_model_name = 'snunlp/KR-ELECTRA-discriminator'
 two_batch_size = 16
-three_max_epoch = 10
+three_max_epoch = 20
 four_shuffle = True
 five_learning_rate = 1e-5
 
-six_train_path = '/data/ephemeral/home/code/sentence_change_not_zero.csv'
+six_train_path = '../data/train.csv'
 #six_train_path = '../data/train.csv'
 #'/data/ephemeral/home/code/harf_df.csv'
 ######################################################################
