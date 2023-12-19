@@ -40,7 +40,7 @@ three_max_epoch = 10
 four_shuffle = True
 five_learning_rate = 1e-5
 
-six_train_path = '/data/ephemeral/home/code/stopword_space_Addlabel5.csv'   #불용어처리+띄어쓰기 -> Label5.0 증강
+six_train_path = '/data/ephemeral/home/code/gramm_re.csv'   
 #six_train_path = '../data/train.csv'
 #'/data/ephemeral/home/code/harf_df.csv'
 ######################################################################
@@ -228,11 +228,11 @@ if __name__ == '__main__':
     parser.add_argument('--learning_rate', default=five_learning_rate, type=float)
 
     parser.add_argument('--train_path', default=six_train_path)
-    parser.add_argument('--dev_path', default='../data/dev.csv')
-    parser.add_argument('--test_path', default='../data/dev.csv')
-    parser.add_argument('--predict_path', default='../data/test.csv')
-    #args = parser.parse_args(args=[])
-    args = parser.parse_args()
+    parser.add_argument('--dev_path', default='/data/ephemeral/home/data/dev.csv')
+    parser.add_argument('--test_path', default='/data/ephemeral/home/data/dev.csv')
+    parser.add_argument('--predict_path', default='/data/ephemeral/home/data/test.csv')
+    args = parser.parse_args(args=[])
+    #args = parser.parse_args()
     #접근 : args.model_name args.batch_size args.max_epoch args.shuffle args.learning_rate
 
     # W&B 초기화
@@ -275,6 +275,12 @@ if __name__ == '__main__':
 
     # 학습이 완료된 모델을 저장합니다.
     torch.save(model, 'model2.pt')
+
+    #앙상블을
+    predictions = trainer.predict(model=model, datamodule=dataloader)
+    predictions = list(round(float(i), 1) for i in torch.cat(predictions))
+
+
 
     # [W&B] 학습이 완료되면 마지막에 W&B run을 종료합니다.
     wandb.finish()
