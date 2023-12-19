@@ -20,6 +20,8 @@ four_shuffle = True
 five_learning_rate = 1e-5
 
 six_train_path = '../data/train.csv'
+seven_dev_path = '/data/ephemeral/home/data/dev.csv'
+eight_test_path = '/data/ephemeral/home/data/test.csv'
 #six_train_path = '../data/train.csv'
 #'/data/ephemeral/home/code/harf_df.csv'
 ######################################################################
@@ -197,9 +199,9 @@ if __name__ == '__main__':
     parser.add_argument('--learning_rate', default=five_learning_rate, type=float)
     
     parser.add_argument('--train_path', default=six_train_path)
-    parser.add_argument('--dev_path', default='../data/dev.csv')
-    parser.add_argument('--test_path', default='../data/dev.csv')
-    parser.add_argument('--predict_path', default='../data/test.csv')
+    parser.add_argument('--dev_path', default=seven_dev_path)
+    parser.add_argument('--test_path', default=seven_dev_path)
+    parser.add_argument('--predict_path', default=eight_test_path)
     args = parser.parse_args(args=[])
 
     # dataloader와 model을 생성합니다.

@@ -34,23 +34,25 @@ snunlp/KR-ELECTRA-discriminator
 #전역변수로 두기
 #디폴트 : klue/roberta-small, 16, 1, True, 1e-5, '../data/train.csv'
 
-one_model_name = 'kykim/electra-kor-base'
+one_model_name = 'snunlp/KR-ELECTRA-discriminator'
 two_batch_size = 16
 three_max_epoch = 10
 four_shuffle = True
 five_learning_rate = 1e-5
 
-six_train_path = '/data/ephemeral/home/code/gramm_re.csv'   
+six_train_path = '/data/ephemeral/home/code/gramm_re.csv'
+seven_dev_path = '/data/ephemeral/home/code/dev_gramm.csv'
+eight_test_path = '/data/ephemeral/home/code/test_gramm.csv'   
 #six_train_path = '../data/train.csv'
 #'/data/ephemeral/home/code/harf_df.csv'
 ######################################################################
 
 
 # seed 고정
-torch.manual_seed(0)
-torch.cuda.manual_seed(0)
-torch.cuda.manual_seed_all(0)
-random.seed(0)
+torch.manual_seed(24)
+torch.cuda.manual_seed(24)
+torch.cuda.manual_seed_all(24)
+random.seed(24)
 
 
 class Dataset(torch.utils.data.Dataset):
@@ -228,9 +230,9 @@ if __name__ == '__main__':
     parser.add_argument('--learning_rate', default=five_learning_rate, type=float)
 
     parser.add_argument('--train_path', default=six_train_path)
-    parser.add_argument('--dev_path', default='/data/ephemeral/home/data/dev.csv')
-    parser.add_argument('--test_path', default='/data/ephemeral/home/data/dev.csv')
-    parser.add_argument('--predict_path', default='/data/ephemeral/home/data/test.csv')
+    parser.add_argument('--dev_path', default=seven_dev_path)
+    parser.add_argument('--test_path', default=seven_dev_path)
+    parser.add_argument('--predict_path', default=eight_test_path)
     args = parser.parse_args(args=[])
     #args = parser.parse_args()
     #접근 : args.model_name args.batch_size args.max_epoch args.shuffle args.learning_rate
