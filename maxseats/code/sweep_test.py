@@ -31,7 +31,7 @@ snunlp/KR-ELECTRA-discriminator
 ######################################################################
 #전역변수로 두기
 #디폴트 : klue/roberta-small, 16, 1, True, 1e-5
-one_model_name = 'kykim/bert-kor-base'
+one_model_name = 'snunlp/KR-ELECTRA-discriminator'
 two_batch_size = 16
 three_max_epoch = 10
 four_shuffle = True
@@ -41,12 +41,15 @@ six_sweep = True    #sweep 사용 여부
 seven_exp_count = 10   #sweep 이용 시, 실험 수
 
 eight_train_path = '../data/train.csv'  #훈련 데이터 위치
+nine_dev_path = '/data/ephemeral/home/data/dev.csv'
+ten_test_path = '/data/ephemeral/home/data/test.csv'
 ######################################################################
+
 
 
 # WandB sweep configuration을 정의합니다.
 sweep_config = {
-        "name": f"{one_model_name}, epoch:{three_max_epoch}",  # Sweep의 이름
+        "name": f"{one_model_name}, epoch:{three_max_epoch} dataset: {eight_train_path}",  # Sweep의 이름
         "method": "random",    # 탐색 방법 (grid 또는 random)
         "metric": {"goal": "maximize", "name": "val_pearson"},  # 최적화할 메트릭 설정
         "parameters": {
@@ -57,10 +60,10 @@ sweep_config = {
 
 
 # seed 고정
-torch.manual_seed(0)
-torch.cuda.manual_seed(0)
-torch.cuda.manual_seed_all(0)
-random.seed(0)
+torch.manual_seed(24)
+torch.cuda.manual_seed(24)
+torch.cuda.manual_seed_all(24)
+random.seed(24)
 
 
 class Dataset(torch.utils.data.Dataset):
@@ -237,12 +240,12 @@ def main():
             project="maxseats",  # W&B 대시보드에서 보고 싶은 프로젝트 이름으로 변경
 
             # run의 이름을 여기에 지정
-            name=f"{one_model_name} epoch {three_max_epoch} - sweep", 
+            name=f"{one_model_name} epoch {three_max_epoch} dataset {eight_train_path}- sweep", 
         )
         
     # dataloader와 model을 생성합니다. - wandb에서 가져오기!
-    dataloader = Dataloader(one_model_name, wandb.config.batch_size, four_shuffle, eight_train_path, '../data/dev.csv',
-                            '../data/dev.csv', '../data/test.csv')
+    dataloader = Dataloader(one_model_name, wandb.config.batch_size, four_shuffle, eight_train_path, nine_dev_path,
+                            nine_dev_path, ten_test_path)
     model = Model(one_model_name, wandb.config.learning_rate)
 
     # gpu가 없으면 accelerator="cpu"로 변경해주세요, gpu가 여러개면 'devices=4'처럼 사용하실 gpu의 개수를 입력해주세요
