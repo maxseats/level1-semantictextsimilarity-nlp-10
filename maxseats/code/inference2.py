@@ -13,14 +13,13 @@ import pytorch_lightning as pl
 ######################################################################
 #전역변수로 두기
 #디폴트 : klue/roberta-small, 16, 1, True, 1e-5, '../data/train.csv'
-one_model_name = 'kykim/electra-kor-base'
+one_model_name = 'snunlp/KR-ELECTRA-discriminator'
 two_batch_size = 16
-three_max_epoch = 30
+three_max_epoch = 10
 four_shuffle = True
 five_learning_rate = 1e-5
 
-#six_train_path = '/data/ephemeral/home/code/stopword_space_Addlabel5.csv'   #불용어처리+띄어쓰기 -> Label5.0 증강
-six_train_path = '/data/ephemeral/home/code/stopword_space_Addlabel5.csv'
+six_train_path = '/data/ephemeral/home/code/gramm_re.csv'   
 #'/data/ephemeral/home/code/harf_df.csv'
 ######################################################################
 
@@ -222,4 +221,8 @@ if __name__ == '__main__':
     # output 형식을 불러와서 예측된 결과로 바꿔주고, output.csv로 출력합니다.
     output = pd.read_csv('../data/sample_submission.csv')
     output['target'] = predictions
+
+    # 'target'이 5.0을 초과하는 경우 5.0으로 변경
+    output['target'] = output['target'].apply(lambda x: min(x, 5.0))
+
     output.to_csv('output2.csv', index=False)
