@@ -48,6 +48,7 @@ ten_test_path = '/data/ephemeral/home/data/test.csv'
 
 
 # WandB sweep configuration을 정의합니다.
+'''
 sweep_config = {
         "name": f"{one_model_name}, epoch:{three_max_epoch} dataset: {eight_train_path}",  # Sweep의 이름
         "method": "random",    # 탐색 방법 (grid 또는 random)
@@ -55,6 +56,17 @@ sweep_config = {
         "parameters": {
             "learning_rate": {"max": 2e-5, "min": 1e-5},
             "batch_size": {"values": [8, 16, 32]},
+        },
+    }
+'''
+#여러 모델 에폭 테스트
+sweep_config = {
+        "name": f"epoch test / dataset: {eight_train_path}",  # Sweep의 이름
+        "method": "grid",    # 탐색 방법 (grid 또는 random)
+        "metric": {"goal": "maximize", "name": "val_pearson"},  # 최적화할 메트릭 설정
+        "parameters": {
+            "one_model_name": {"values": ['monologg/koelectra-base-finetuned-nsmc', 'kykim/funnel-kor-base']},
+            "three_max_epoch": {"values": [10, 15, 20, 25]},
         },
     }
 
@@ -244,12 +256,12 @@ def main():
         )
         
     # dataloader와 model을 생성합니다. - wandb에서 가져오기!
-    dataloader = Dataloader(one_model_name, wandb.config.batch_size, four_shuffle, eight_train_path, nine_dev_path,
+    dataloader = Dataloader(wandb.config.one_model_name, two_batch_size, four_shuffle, eight_train_path, nine_dev_path,
                             nine_dev_path, ten_test_path)
-    model = Model(one_model_name, wandb.config.learning_rate)
+    model = Model(wandb.config.one_model_name, five_learning_rate)
 
     # gpu가 없으면 accelerator="cpu"로 변경해주세요, gpu가 여러개면 'devices=4'처럼 사용하실 gpu의 개수를 입력해주세요
-    trainer = pl.Trainer(accelerator="gpu", devices=1, max_epochs=three_max_epoch, log_every_n_steps=1)
+    trainer = pl.Trainer(accelerator="gpu", devices=1, max_epochs=wandb.config.three_max_epoch, log_every_n_steps=1)
 
     # Train part
     trainer.fit(model=model, datamodule=dataloader)
@@ -263,7 +275,9 @@ def main():
 
 # WandB sweep를 초기화하고 sweep ID를 가져옵니다.
 sweep_id = wandb.sweep(sweep=sweep_config, project="maxseats")
-wandb.agent(sweep_id, function=main, count=seven_exp_count)
+
+wandb.agent(sweep_id, function=main)
+#wandb.agent(sweep_id, function=main, count=seven_exp_count)
 
 # [W&B] 학습이 완료되면 마지막에 W&B run을 종료합니다.
 wandb.finish()
