@@ -30,10 +30,11 @@ xlm-roberta-large
 snunlp/KR-ELECTRA-discriminator
 
 <3개 선정>
-kykim/electra-kor-base
-kykim/bert-kor-base
-snunlp/KR-ELECTRA-discriminator
 
+모델1 : snunlp/KR-ELECTRA-discriminator (배치:16, epo:20) -0.
+모델2 : monologg/koelectra-base-v3-discriminator (배치:16, epo:15) -0.
+모델3 : kykim/electra-kor-base (배치:16, epo:25) -0.
+random_seed == 0
 '''
 
 ######################################################################
@@ -44,10 +45,10 @@ snunlp/KR-ELECTRA-discriminator
 
 
 # seed 고정
-torch.manual_seed(24)
-torch.cuda.manual_seed(24)
-torch.cuda.manual_seed_all(24)
-random.seed(24)
+torch.manual_seed(0)
+torch.cuda.manual_seed(0)
+torch.cuda.manual_seed_all(0)
+random.seed(0)
 
 
 class Dataset(torch.utils.data.Dataset):
@@ -217,19 +218,20 @@ if __name__ == '__main__':
     # 터미널 실행 예시 : python3 run.py --batch_size=64 ...
     # 실행 시 '--batch_size=64' 같은 인자를 입력하지 않으면 default 값이 기본으로 실행됩니다
 
-    train_data_path = '/data/ephemeral/home/code/gramm_re.csv'
-
+    train_data_path = '/data/ephemeral/home/code/Label0_to_Label5_dochi.csv'
+    dev_data_path = '/data/ephemeral/home/data/dev.csv'
+    test_data_path = '/data/ephemeral/home/data/test.csv'
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('--model_name', default='kykim/electra-kor-base', type=str)
+    parser.add_argument('--model_name', default='snunlp/KR-ELECTRA-discriminator', type=str)
     parser.add_argument('--batch_size', default=16, type=int)
-    parser.add_argument('--max_epoch', default=25, type=int)
+    parser.add_argument('--max_epoch', default=20, type=int)
     parser.add_argument('--shuffle', default=True)
     parser.add_argument('--learning_rate', default=1e-5, type=float)
     parser.add_argument('--train_path', default=train_data_path)
-    parser.add_argument('--dev_path', default='../data/dev.csv')
-    parser.add_argument('--test_path', default='../data/dev.csv')
-    parser.add_argument('--predict_path', default='../data/test.csv')
+    parser.add_argument('--dev_path', default=dev_data_path)
+    parser.add_argument('--test_path', default=dev_data_path)
+    parser.add_argument('--predict_path', default=test_data_path)
     args = parser.parse_args(args=[])
     # dataloader와 model을 생성합니다.
     dataloader = Dataloader(args.model_name, args.batch_size, args.shuffle, args.train_path, args.dev_path,
@@ -249,15 +251,15 @@ if __name__ == '__main__':
     
     parser = argparse.ArgumentParser()
 
-    parser.add_argument('--model_name', default='kykim/electra-kor-base', type=str)
+    parser.add_argument('--model_name', default='monologg/koelectra-base-v3-discriminator', type=str)
     parser.add_argument('--batch_size', default=16, type=int)
     parser.add_argument('--max_epoch', default=15, type=int)
     parser.add_argument('--shuffle', default=True)
     parser.add_argument('--learning_rate', default=1e-5, type=float)
     parser.add_argument('--train_path', default=train_data_path)
-    parser.add_argument('--dev_path', default='../data/dev.csv')
-    parser.add_argument('--test_path', default='../data/dev.csv')
-    parser.add_argument('--predict_path', default='../data/test.csv')
+    parser.add_argument('--dev_path', default=dev_data_path)
+    parser.add_argument('--test_path', default=dev_data_path)
+    parser.add_argument('--predict_path', default=test_data_path)
     args = parser.parse_args(args=[])
     # dataloader와 model을 생성합니다.
     dataloader = Dataloader(args.model_name, args.batch_size, args.shuffle, args.train_path, args.dev_path,
@@ -274,15 +276,15 @@ if __name__ == '__main__':
 
     
     parser = argparse.ArgumentParser()
-    parser.add_argument('--model_name', default='snunlp/KR-ELECTRA-discriminator', type=str)
+    parser.add_argument('--model_name', default='kykim/electra-kor-base', type=str)
     parser.add_argument('--batch_size', default=16, type=int)
-    parser.add_argument('--max_epoch', default=20, type=int)
+    parser.add_argument('--max_epoch', default=25, type=int)
     parser.add_argument('--shuffle', default=True)
     parser.add_argument('--learning_rate', default=1e-5, type=float)
     parser.add_argument('--train_path', default=train_data_path)
-    parser.add_argument('--dev_path', default='../data/dev.csv')
-    parser.add_argument('--test_path', default='../data/dev.csv')
-    parser.add_argument('--predict_path', default='../data/test.csv')
+    parser.add_argument('--dev_path', default=dev_data_path)
+    parser.add_argument('--test_path', default=dev_data_path)
+    parser.add_argument('--predict_path', default=test_data_path)
     args = parser.parse_args(args=[])
     # dataloader와 model을 생성합니다.
     dataloader = Dataloader(args.model_name, args.batch_size, args.shuffle, args.train_path, args.dev_path,
