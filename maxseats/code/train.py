@@ -34,13 +34,13 @@ snunlp/KR-ELECTRA-discriminator
 #전역변수로 두기
 #디폴트 : klue/roberta-small, 16, 1, True, 1e-5, '../data/train.csv'
 
-one_model_name = 'kykim/funnel-kor-base'
+one_model_name = 'snunlp/KR-ELECTRA-discriminator'
 two_batch_size = 16
-three_max_epoch = 20
+three_max_epoch = 10
 four_shuffle = True
 five_learning_rate = 1e-5
 
-six_train_path = '../data/train.csv'
+six_train_path = '/data/ephemeral/home/code/Label0_to_Label5_pykospace.csv'
 seven_dev_path = '/data/ephemeral/home/data/dev.csv'
 eight_test_path = '/data/ephemeral/home/data/test.csv'
 #six_train_path = '../data/train.csv'
